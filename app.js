@@ -6,4 +6,5 @@ var dynamicWordCloud = DynamicWordCloud({
 document.getElementById("contours").addEventListener('click', function () {
 	dynamicWordCloud.drawContours();
 	dynamicWordCloud.invertImage();
+	dynamicWordCloud.drawRectangles();
 });

@@ -7,6 +7,11 @@
 		return new DynamicWordCloud.init(options);
 	};
 
+	// constants
+	var AVG_WHITE = 255,
+
+		AVG_BLACK = 0;
+
 	var _canvas,
 
 		ctx,
@@ -14,6 +19,10 @@
 		canny,
 
 		options,
+
+		points = [],
+
+		quad,
 
 		loadImage = function (options) {
 			var img = new Image();
@@ -42,6 +51,35 @@
 				data[i + 2] = 255 - data[i + 2];
 			}
 			ctx.putImageData(imageData, 0, 0);
+		},
+
+		drawRectangles: function (noOfReactangles) {
+			noOfReactangles = noOfReactangles || ((_canvas.width / 4) * (_canvas.height / 4));
+			var pointQuad = true;
+			var bounds = {
+				x: 0,
+				y: 0,
+				width: _canvas.width,
+				height: _canvas.height
+			};
+			quad = new QuadTree(bounds, pointQuad);
+			var imageData = ctx.getImageData(0, 0, _canvas.width, _canvas.height);
+			var data = imageData.data,
+				totalPoints = data.length / 4;
+			for (var i = 0; i < data.length; i+=4) {
+				if (((data[i] + data[i + 1] + data[i + 2]) / 3) === AVG_BLACK) {
+					var x = Math.floor(i / 4) % _canvas.width;
+					var y = Math.floor((Math.floor(i / 4) - x) / _canvas.width);
+					quad.insert({
+						x: x,
+						y: y
+					});
+                    // console.log('X: ', x,'Y: ', y);
+					// data[(x + y * _canvas.width) * 4] = 255; // useful for debugging
+				}
+			}
+			// console.log(quad.retrieve({x: 179, y: 52}));
+			// ctx.putImageData(imageData, 0, 0); // useful for debugging
 		}
 	};
 
